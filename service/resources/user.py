@@ -1,8 +1,7 @@
 from flask_restful import Resource, reqparse
 from service.common import connector
 
-class User(Resource):
-    TABLE_NAME = 'users'
+class User():
 
     def __init__(self, _id, username, password):
         self.id = _id
@@ -40,3 +39,33 @@ class User(Resource):
 
         connection.close()
         return user
+
+class UserRegister(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('username',
+                        type=str,
+                        required=True,
+                        help="This field can't be blank."
+                        )
+    parser.add_argument('password',
+                        type=str,
+                        required=True,
+                        help="This field can't be blank."
+                        )
+
+    def post(self):
+        data = UserRegister.parser.parse_args()
+
+        connection = connector.get_connection()
+        cursor = connector.get_cursor()
+
+        query = "INSERT INTO users VALUES (NULL, ?, ?)"
+        cursor.execute(query, (data['username'], data['password']))
+
+        connection.commit()
+        connection.close()
+
+        return {"massage": "User Created Successfully."}, 201
+
+
