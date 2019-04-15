@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
+import sqlite3
 
-items = []
 
 class Item(Resource): #every resource has to be a class
     parser = reqparse.RequestParser()
@@ -13,13 +13,17 @@ class Item(Resource): #every resource has to be a class
 
     @jwt_required()
     def get(self, name):
-        item = next(filter(lambda x: x['name'] == name, items), None) #The function filter(function, list) offers an
-        # elegant way to filter out all the elements of a list, for which the function function returns True.
+        connection = sqlite3.connect('../../db/data.db')
+        cursor = connection.cursor()
 
-        # for item in items:
-        #     if item['name'] == name:
-        #         return item
-        return {'item': item}, 200 if item else 404 #information for data was create or not
+        query = "SELECT * FROM items WHERE name=?"
+        result = cursor.execute(query, (name,))
+        row = result.fetchone()
+        connection.close()
+
+        if row:
+            return {'item': {'name': row[0], 'price': row[1]}}
+        return {'massage': 'Item not found'}, 404
 
     def post(self, name):
         if next(filter(lambda x: x['name'] == name, items), None):
