@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 import sqlite3
-
+from service.common import connector
 
 class Item(Resource): #every resource has to be a class
     parser = reqparse.RequestParser()
@@ -13,7 +13,7 @@ class Item(Resource): #every resource has to be a class
 
     @jwt_required()
     def get(self, name):
-        connection = sqlite3.connect('../../db/data.db')
+        connection = connector.get_connection()
         cursor = connection.cursor()
 
         query = "SELECT * FROM items WHERE name=?"
