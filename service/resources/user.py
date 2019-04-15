@@ -57,6 +57,9 @@ class UserRegister(Resource):
     def post(self):
         data = UserRegister.parser.parse_args()
 
+        if User.find_by_username(data['username']):
+            return {"massage": "A user witth hat usernamse already exist"}, 400
+
         connection = connector.get_connection()
         cursor = connector.get_cursor()
 
