@@ -37,10 +37,14 @@ class Item(Resource): #every resource has to be a class
         return item, 201 #information for data was create or not
 
     def delete(self, name):
-        global items
-        items = list(filter(lambda x: x['name'] != name, items))
+        connection = connector.get_connection()
+        cursor = connection.cursor()
+
+        query = "DELETE FROM items WHERE name=?"
+        cursor.execute(query, (name,))
+
         return {'massage': 'Item delete'}
-    #
+
     def put(self, name):
         # data = request.get_json()
         data = Item.parser.parse_args()
