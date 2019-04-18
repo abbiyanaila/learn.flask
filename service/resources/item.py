@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
-import sqlite3
 from service.common import connector
 
 class Item(Resource): #every resource has to be a class
@@ -15,13 +14,13 @@ class Item(Resource): #every resource has to be a class
 
     @jwt_required()
     def get(self, name):
-        item = self.find_by_name()
+        item = self.find_by_name(name)
         if item:
             return item
         return {'massage': 'Item not found'}, 404
 
-
-    def find_by_name(self):
+    @classmethod
+    def find_by_name(cls, name):
         connection = connector.get_connection()
         cursor = connection.cursor()
 
@@ -35,19 +34,19 @@ class Item(Resource): #every resource has to be a class
 
 
     def post(self, name):
-        if self.find_by_name()
-            return {'massage': "An item with name '{}' already exists.".format(name)}, 400
+        if self.find_by_name(name):
+            return {'massage': "An item with name '{}' already exists.".format(name)}
 
         data = Item.parser.parse_args()
 
         item = {'name': name, 'price': data['price']}
 
         try:
-            item.insert(item)
+            Item.insert(item)
         except:
             return {'massage': "An error inserting the item"}
 
-        return item, 201 #information for data was create or not
+        return item #information for data was create or not
 
 
     @classmethod
@@ -56,9 +55,9 @@ class Item(Resource): #every resource has to be a class
         cursor = connection.cursor()
 
         query = "INSERT INTO {table} VALUES(?, ?)".format(table=cls.TABLE_NAME)
-        cursor.execute(query, item['name'], item['price'])
+        cursor.execute(query, (item['name'], item['price']))
 
-
+    @jwt_required()
     def delete(self, name):
         connection = connector.get_connection()
         cursor = connection.cursor()
@@ -68,23 +67,23 @@ class Item(Resource): #every resource has to be a class
 
         return {'massage': 'Item delete'}
 
-
+    @jwt_required()
     def put(self, name):
         data = Item.parser.parse_args()
-        item = self.find_by_name()
-        update_item = {'name':name, 'price': data['price']}
+        item = self.find_by_name(name)
+        updated_item = {'name': name, 'price': data['price']}
         if item is None:
             try:
-                Item.insert(update_item)
+                Item.insert(updated_item)
             except:
-                return {'massage': 'An error insert item'}
+                return {"message": "An error occurred inserting the item."}
         else:
             try:
-                Item.update(update_item)
+                Item.update(updated_item)
             except:
                 raise
-                return {'massage': 'An error update item'}
-        return update_item
+                return {"message": "An error occurred updating the item."}
+        return updated_item
 
     @classmethod
     def update(cls, item):
