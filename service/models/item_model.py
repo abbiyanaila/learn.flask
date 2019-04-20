@@ -1,12 +1,12 @@
 from service.common import connector
 
 class ItemModel:
-    def __init__(self, name, self):
+    def __init__(self, name):
         self.name = name
         self.price = price
 
     def json(self):
-        return {'name': self.name 'price': self.price}
+        return {'name': self.name, 'price': self.price}
 
     @classmethod
     def find_by_name(cls, name):
@@ -19,20 +19,18 @@ class ItemModel:
         connection.close()
 
         if row:
-            return {'item': {'name': row[0], 'price': row[1]}}
+            return cls(*row)
 
-    @classmethod
-    def insert(cls, item):
+    def insert(self):
         connection = connector.get_connection()
         cursor = connection.cursor()
 
         query = "INSERT INTO {table} VALUES(?, ?)".format(table=cls.TABLE_NAME)
-        cursor.execute(query, (item['name'], item['price']))
+        cursor.execute(query, (self.name, self.price))
 
-    @classmethod
-    def update(cls, item):
+    def update(self):
         connection = connector.get_connection()
         cursor = connection.cursor()
 
         query = "UPDATE {table} SET price=? WHERE name=?".format(table=cls.TABLE_NAME)
-        cursor.execute(query, (item['price'], item['name']))
+        cursor.execute(query, (self.price, self.name))
