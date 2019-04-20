@@ -4,7 +4,7 @@ from service.models.user_model import UserModel
 
 def authenticate(username, password):
     usr = UserModel.find_by_username(username)
-    if user and safe_str_cmp(usr.password, password):
+    if usr and safe_str_cmp(usr.password, password):
         return usr
 
 
