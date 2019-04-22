@@ -1,7 +1,7 @@
 from service.common import connector
+from db_sqlalchemy import db
 
-class User():
-
+class UserModel(db.Model):
     def __init__(self, _id, username, password):
         self.id = _id
         self.username = username
