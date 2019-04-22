@@ -1,7 +1,7 @@
 from service.common import connector
 
 class ItemModel:
-    def __init__(self, name):
+    def __init__(self, name, price):
         self.name = name
         self.price = price
 
@@ -13,7 +13,7 @@ class ItemModel:
         connection = connector.get_connection()
         cursor = connection.cursor()
 
-        query = "SELECT * FROM {table} WHERE name=?".format(table=cls.TABLE_NAME)
+        query = "SELECT * FROM items WHERE name=?"
         result = cursor.execute(query, (name,))
         row = result.fetchone()
         connection.close()
@@ -25,12 +25,12 @@ class ItemModel:
         connection = connector.get_connection()
         cursor = connection.cursor()
 
-        query = "INSERT INTO {table} VALUES(?, ?)".format(table=cls.TABLE_NAME)
+        query = "INSERT INTO items VALUES(?, ?)"
         cursor.execute(query, (self.name, self.price))
 
     def update(self):
         connection = connector.get_connection()
         cursor = connection.cursor()
 
-        query = "UPDATE {table} SET price=? WHERE name=?".format(table=cls.TABLE_NAME)
+        query = "UPDATE items SET price=? WHERE name=?"
         cursor.execute(query, (self.price, self.name))
