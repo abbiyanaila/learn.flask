@@ -7,6 +7,7 @@ from service.resources.item import ItemList
 from service.resources.user import UserRegister
 
 app = Flask(__name__) #special python variable, unique name
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'qwerty'
 api = Api(app)
