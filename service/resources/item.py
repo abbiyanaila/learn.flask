@@ -4,8 +4,6 @@ from service.common import connector
 from service.models.item_model import ItemModel
 
 class Item(Resource): #every resource has to be a class
-    TABLE_NAME = 'items'
-
     parser = reqparse.RequestParser()
     parser.add_argument('price',
                         type=float,
@@ -30,7 +28,7 @@ class Item(Resource): #every resource has to be a class
         item = ItemModel(name, data['price'])
 
         try:
-            item.insert()
+            item.save_to_db()
         except:
             return {'massage': "An error inserting the item"}
 
@@ -39,33 +37,43 @@ class Item(Resource): #every resource has to be a class
 
     @jwt_required()
     def delete(self, name):
-        connection = connector.get_connection()
-        cursor = connection.cursor()
+        item = Item.find_by_name(name)
+        if item:
+            item.delete_from_db()
 
-        query = "DELETE FROM {table} WHERE name=?".format(table=self.TABLE_NAME)
-        cursor.execute(query, (name,))
-
-        return {'massage': 'Item delete'}
+        return {'massage': 'Item Delete'}
+        # connection = connector.get_connection()
+        # cursor = connection.cursor()
+        #
+        # query = "DELETE FROM {table} WHERE name=?".format(table=self.TABLE_NAME)
+        # cursor.execute(query, (name,))
+        #
+        # return {'massage': 'Item delete'}
 
     @jwt_required()
     def put(self, name):
         data = Item.parser.parse_args()
 
         item = ItemModel.find_by_name(name)
-        updated_item = ItemModel(name, data['price'])
+
+        # updated_item = ItemModel(name, data['price'])
 
         if item is None:
-            try:
-                updated_item.insert()
-            except:
-                return {"message": "An error occurred inserting the item."}
+            item = ItemModel(name, data['price'])
+            # try:
+            #     updated_item.insert()
+            # except:
+            #     return {"message": "An error occurred inserting the item."}
         else:
-            try:
-                updated_item.update()
-            except:
-                raise
-                return {"message": "An error occurred updating the item."}
-        return updated_item.json()
+            item.price = data['price']
+
+        item.save_to_db()
+            # try:
+            #     updated_item.update()
+            # except:
+            #     raise
+            #     return {"message": "An error occurred updating the item."}
+        return item.json()
 
 class ItemList(Resource):
     TABLE_NAME = 'items'
