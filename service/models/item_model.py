@@ -1,4 +1,4 @@
-from service.common import connector
+# from service.common import connector
 from db_sqlalchemy import db
 
 class ItemModel(db.Model):
@@ -30,16 +30,20 @@ class ItemModel(db.Model):
         # if row:
         #     return cls(*row)
 
-    def insert(self):
-        connection = connector.get_connection()
-        cursor = connection.cursor()
-
-        query = "INSERT INTO items VALUES(?, ?)"
-        cursor.execute(query, (self.name, self.price))
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        # connection = connector.get_connection()
+        # cursor = connection.cursor()
+        #
+        # query = "INSERT INTO items VALUES(?, ?)"
+        # cursor.execute(query, (self.name, self.price))
 
     def update(self):
-        connection = connector.get_connection()
-        cursor = connection.cursor()
-
-        query = "UPDATE items SET price=? WHERE name=?"
-        cursor.execute(query, (self.price, self.name))
+        db.session.delete(self)
+        db.session.commit()
+        # connection = connector.get_connection()
+        # cursor = connection.cursor()
+        #
+        # query = "UPDATE items SET price=? WHERE name=?"
+        # cursor.execute(query, (self.price, self.name))
