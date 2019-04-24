@@ -1,13 +1,11 @@
-# from service.common import connector
-from db_sqlalchemy import db
+from database import Base, db_sess
+from sqlalchemy import Column, Integer, String, Float
 
-class ItemModel(db.Model):
-
+class ItemModel(Base):
     __tablename__ = 'items'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    price = db.Column(db.Float(precision=2))
+    id = Column(Integer, primary_key=True)
+    name = Column(String(80))
+    price = Column(Float(precision=2))
 
     def __init__(self, name, price):
         self.name = name
@@ -16,34 +14,22 @@ class ItemModel(db.Model):
     def json(self):
         return {'name': self.name, 'price': self.price}
 
-    @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
-        # connection = connector.get_connection()
-        # cursor = connection.cursor()
-        #
-        # query = "SELECT * FROM items WHERE name=?"
-        # result = cursor.execute(query, (name,))
-        # row = result.fetchone()
-        # connection.close()
-        #
-        # if row:
-        #     return cls(*row)
+    def __repr__(self):
+        return '<Item %r>' % (self.name)
 
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-        # connection = connector.get_connection()
-        # cursor = connection.cursor()
-        #
-        # query = "INSERT INTO items VALUES(?, ?)"
-        # cursor.execute(query, (self.name, self.price))
 
-    def update(self):
-        db.session.delete(self)
-        db.session.commit()
-        # connection = connector.get_connection()
-        # cursor = connection.cursor()
-        #
-        # query = "UPDATE items SET price=? WHERE name=?"
-        # cursor.execute(query, (self.price, self.name))
+class ItemDAO(object):
+
+    @staticmethod
+    def save(item):
+        db_sess.add(item)
+        db_sess.commit()
+
+    @staticmethod
+    def find_by_name(name):
+        query = db_sess.query(ItemModel).filter_by(name=name)
+        res = list(query)
+        if len(res)==0:
+            return False
+        else:
+            return res
