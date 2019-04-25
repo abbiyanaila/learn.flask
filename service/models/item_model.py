@@ -33,3 +33,19 @@ class ItemDAO(object):
             return False
         else:
             return res
+
+    @staticmethod
+    def delete(name):
+        res = ItemDAO.find_by_name(name=name)
+        if res:
+            db_sess.delete(res[0])
+
+    @staticmethod
+    def update(name, price):
+        res = ItemDAO.find_by_name(name=name, price=price)
+        if res:
+            item = res[0]
+            item.name = name
+            item.price = price
+
+            db_sess.update(item)
