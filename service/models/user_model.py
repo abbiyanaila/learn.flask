@@ -17,6 +17,13 @@ class UserModel(Base):
     def __repr__(self):
         return '<UserRegister %r>' % (self.username)
 
+class UserDAO(object):
+
+    @staticmethod
+    def save(item):
+        db_sess.add(item)
+        db_sess.commit()
+
     @classmethod
     def find_by_username(cls, username):
         connection = connector.get_connection()
