@@ -1,17 +1,21 @@
 from service.common import connector
-from db_sqlalchemy import db
+from database import Base, db_sess
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import mapper
 
-class UserModel(db.Model):
+class UserModel(Base):
     __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80))
-    password = db.Column(db.String(80))
+    id = Column(Integer, primary_key=True)
+    username = Column(String(80))
+    password = Column(String(80))
 
     def __init__(self, _id, username, password):
         self.id = _id
         self.username = username
         self.password = password
+
+    def __repr__(self):
+        return '<UserRegister %r>' % (self.username)
 
     @classmethod
     def find_by_username(cls, username):
