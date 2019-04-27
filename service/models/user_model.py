@@ -24,21 +24,27 @@ class UserDAO(object):
         db_sess.add(item)
         db_sess.commit()
 
-    @classmethod
+    @staticmethod
     def find_by_username(cls, username):
-        connection = connector.get_connection()
-        cursor = connector.get_cursor()
-
-        query = "SELECT * FROM users WHERE username=?"
-        result = cursor.execute(query, (username,))
-        row = result.fetchone()
-        if row:
-            user = cls(*row)
+        query = db_sess.query(UserModel).filter_by(name=username)
+        res = list(query)
+        if len(res)==0:
+            return pass
         else:
-            user = None
-
-        connection.close()
-        return user
+            return res
+        # connection = connector.get_connection()
+        # cursor = connector.get_cursor()
+        #
+        # query = "SELECT * FROM users WHERE username=?"
+        # result = cursor.execute(query, (username,))
+        # row = result.fetchone()
+        # if row:
+        #     user = cls(*row)
+        # else:
+        #     user = None
+        #
+        # connection.close()
+        # return user
 
     @classmethod
     def find_by_id(cls, _id):
