@@ -1,9 +1,9 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from service.common import connector
-from service.models.item_model import ItemModel
+from service.models.item_model import ItemModel, ItemDAO
 
-class Item(Resource): #every resource has to be a class
+class Item(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('price',
                         type=float,
@@ -13,67 +13,41 @@ class Item(Resource): #every resource has to be a class
 
     @jwt_required()
     def get(self, name):
-        item = ItemModel.find_by_name(name)
+        item = ItemDAO.find_by_name(name)
         if item:
-            return item.json()
-        return {'massage': 'Item not found'}, 404
-
+            return item[0].json()
+        return {'massage': 'Item not found'}
 
     def post(self, name):
-        if ItemModel.find_by_name(name):
+        res = ItemDAO.find_by_name(name)
+        # if len(res)!=0:
+        if res:
             return {'massage': "An item with name '{}' already exists.".format(name)}
 
         data = Item.parser.parse_args()
 
         item = ItemModel(name, data['price'])
+        ItemDAO.save(item)
 
-        try:
-            item.save_to_db()
-        except:
-            return {'massage': "An error inserting the item"}
+        return item.json()
 
-        return item.json() #information for data was create or not
-
-
-    @jwt_required()
     def delete(self, name):
-        item = Item.find_by_name(name)
+        item = ItemDAO.find_by_name(name)
         if item:
-            item.delete_from_db()
+            ItemDAO.delete(name)
 
         return {'massage': 'Item Delete'}
-        # connection = connector.get_connection()
-        # cursor = connection.cursor()
-        #
-        # query = "DELETE FROM {table} WHERE name=?".format(table=self.TABLE_NAME)
-        # cursor.execute(query, (name,))
-        #
-        # return {'massage': 'Item delete'}
 
     @jwt_required()
     def put(self, name):
         data = Item.parser.parse_args()
-
-        item = ItemModel.find_by_name(name)
-
-        # updated_item = ItemModel(name, data['price'])
-
+        item = ItemDAO.find_by_name(name)
         if item is None:
             item = ItemModel(name, data['price'])
-            # try:
-            #     updated_item.insert()
-            # except:
-            #     return {"message": "An error occurred inserting the item."}
         else:
             item.price = data['price']
-
         item.save_to_db()
-            # try:
-            #     updated_item.update()
-            # except:
-            #     raise
-            #     return {"message": "An error occurred updating the item."}
-        return item.json()
+        return item[0].json()
 
 class ItemList(Resource):
     TABLE_NAME = 'items'
