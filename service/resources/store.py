@@ -16,3 +16,13 @@ class Store(Resource):
         store = StoreModel(name)
         StoreDAO.save(store)
         return store.json()
+
+    def delete(self, name):
+        store = StoreDAO.find_by_name(name)
+        if store:
+            StoreDAO.delete(name)
+        return {'massage': "Item Delete"}
+
+class StoreList(Resource):
+    def get(self):
+        return {'stores': [store.json() for store in StoreModel.query.all()]}
