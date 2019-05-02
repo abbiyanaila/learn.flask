@@ -1,11 +1,14 @@
 from database import Base, db_sess
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 
 class ItemModel(Base):
     __tablename__ = 'items'
+
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
     price = Column(Float(precision=2))
+
+    store_id = db.Column(Integer, ForeignKey('store.id'))
 
     def __init__(self, name, price):
         self.name = name
