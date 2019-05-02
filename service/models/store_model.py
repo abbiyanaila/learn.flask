@@ -7,11 +7,14 @@ class StoreModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
 
+    items = db_sess.relationship('ItemModel', lazy='dynamic')
+
     def __init__(self, name):
         self.name = name
 
     def json(self):
-        return {'name': self.name, 'items': self.items}
+        # return {'name': self.name, 'items': self.items}
+        return {'name': self.name, 'items': [item.json() for item in self.items.all()]}
 
 class storeDAO(object):
 
