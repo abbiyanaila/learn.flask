@@ -10,6 +10,11 @@ class Item(Resource):
                         required=True,
                         help="this field cannot be left blank !"
                         )
+    parser.add_argument('store_id',
+                        type=int,
+                        required=True,
+                        help="every item need store id."
+                        )
 
     @jwt_required()
     def get(self, name):
@@ -26,7 +31,7 @@ class Item(Resource):
 
         data = Item.parser.parse_args()
 
-        item = ItemModel(name, data['price'])
+        item = ItemModel(name, data['price'], data['store_id'])
         ItemDAO.save(item)
 
         return item.json()
@@ -43,7 +48,7 @@ class Item(Resource):
         data = Item.parser.parse_args()
         item = ItemDAO.find_by_name(name)
         if item is None:
-            item = ItemModel(name, data['price'])
+            item = ItemModel(name, data['price'], data['store_id'])
         else:
             item.price = data['price']
         item.save_to_db()
