@@ -8,11 +8,13 @@ class ItemModel(Base):
     name = Column(String(80))
     price = Column(Float(precision=2))
 
-    store_id = db.Column(Integer, ForeignKey('store.id'))
+    store_id = db_sess.Column(Integer, ForeignKey('store.id'))
+    store = db_sess.relationship('StoreModel')
 
-    def __init__(self, name, price):
+    def __init__(self, name, price, store_id):
         self.name = name
         self.price = price
+        self.store_id = store_id
 
     def json(self):
         return {'name': self.name, 'price': self.price}
@@ -50,5 +52,4 @@ class ItemDAO(object):
             item = res[0]
             item.name = name
             item.price = price
-
             db_sess.update(item)
