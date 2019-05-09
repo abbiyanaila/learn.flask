@@ -10,11 +10,14 @@ create_table = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userna
 cursor.execute(create_table)
 cursor.execute("INSERT INTO users VALUES (1, 'desi', 'qwerty')")
 
-
 create_table = "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name text, price real)"
 cursor.execute(create_table)
-cursor.execute("INSERT INTO items VALUES (1, 'test', 10.99)")
+cursor.execute("INSERT INTO items VALUES (1, 'carpet', 10.99)")
+
+create_table = "CREATE TABLE IF NOT EXISTS stores (id INTEGER PRIMARY KEY, name text)"
+cursor.execute(create_table)
+cursor.execute("INSERT INTO items VALUES (1, 'kenawa')")
 
 connection.commit()
-
 connection.close()
+
