@@ -1,5 +1,6 @@
 from database import Base, db_sess
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
 
 class ItemModel(Base):
     __tablename__ = 'items'
