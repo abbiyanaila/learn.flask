@@ -18,7 +18,7 @@ class StoreModel(Base):
         # return {'name': self.name, 'items': self.items}
         return {'name': self.name, 'items': [item.json() for item in self.items.all()]}
 
-class storeDAO(object):
+class StoreDAO(object):
 
     @staticmethod
     def save(store: StoreModel):
