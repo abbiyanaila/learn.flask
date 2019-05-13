@@ -8,8 +8,8 @@ class ItemModel(Base):
     name = Column(String(80))
     price = Column(Float(precision=2))
 
-    store_id = db_sess.Column(Integer, ForeignKey('store.id'))
-    store = db_sess.relationship('StoreModel')
+    store_id = Column(Integer, ForeignKey('stores.id'))
+    store = relationship('StoreModel')
 
     def __init__(self, name, price, store_id):
         self.name = name
@@ -24,7 +24,6 @@ class ItemModel(Base):
 
 
 class ItemDAO(object):
-
     @staticmethod
     def save(item):
         db_sess.add(item)
