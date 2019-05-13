@@ -1,5 +1,7 @@
 from database import Base, db_sess
 from sqlalchemy import Column, Integer, String
+from service.models import item_model
+from sqlalchemy.orm import relationship
 
 class StoreModel(Base):
     __tablename__ = 'stores'
@@ -7,7 +9,7 @@ class StoreModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
 
-    items = db_sess.relationship('ItemModel', lazy='dynamic')
+    items = relationship('ItemModel', lazy='dynamic')
 
     def __init__(self, name):
         self.name = name
