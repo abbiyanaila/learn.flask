@@ -3,9 +3,9 @@ from service.models.user_model import UserModel, UserDAO
 
 
 def authenticate(username, password):
-    usr = UserDAO.find_by_username(username)
-    if usr and safe_str_cmp(usr.password, password):
-        return usr
+    list_usr = UserDAO.find_by_username(username)
+    if list_usr and safe_str_cmp(list_usr[0].password, password):
+        return list_usr[0]
 
 
 def identity(payload):
